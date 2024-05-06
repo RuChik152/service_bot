@@ -72,10 +72,19 @@ func EchoBot(ch chan []byte, chat_id int64) {
 			log.Println("EchoBot: ", err)
 		} else {
 			log.Println("Отправляю запрос боту: ", msg)
-			newMessage := tgbotapi.NewMessage(chat_id, msg)
-			if _, err := BOT.Send(newMessage); err != nil {
-				log.Panic("Ошибка отправки сообщения боту: ", err)
+			if len(msg) <= 4000 {
+				newMessage := tgbotapi.NewMessage(chat_id, msg)
+				if _, err := BOT.Send(newMessage); err != nil {
+					log.Panic("Ошибка отправки сообщения боту: ", err)
+				}
+			} else {
+				shortMsg := msg[:4000]
+				newMessage := tgbotapi.NewMessage(chat_id, shortMsg)
+				if _, err := BOT.Send(newMessage); err != nil {
+					log.Panic("Ошибка отправки сообщения боту: ", err)
+				}
 			}
+
 		}
 	}
 }

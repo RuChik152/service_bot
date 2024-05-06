@@ -27,9 +27,9 @@ func buildHandler(router *mux.Router) {
 		}
 		defer r.Body.Close()
 		log.Println("<<<<ПОЛУЧИЛ ЗАПРОС ОТ СЕРВЕРА>>>>", string(body))
-		bot.BOT_CHANEL <- string(body)
-		log.Println("Received data:", string(body))
+		bot.BOT_CHANEL <- body
+		log.Println("Received data: ", string(body))
 		w.WriteHeader(http.StatusOK)
-	}).Methods("GET")
+	}).Methods("POST")
 
 }

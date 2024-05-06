@@ -8,7 +8,7 @@ import (
 )
 
 var BOT *tgbotapi.BotAPI
-var BOT_CHANEL = make(chan string, 5)
+var BOT_CHANEL = make(chan []byte, 5)
 
 func InitBOT() {
 	BOT = bot()
@@ -39,7 +39,9 @@ func InitBOT() {
 		// 	msg.Text = "I'm ok."
 		case "echo":
 			go func(chatID int64) {
+
 				id := chatID
+				log.Println("<<Сработал echo>> : CHAI_ID: ", id)
 				go EchoBot(BOT_CHANEL, id)
 			}(update.Message.Chat.ID)
 		default:
@@ -56,7 +58,7 @@ func bot() *tgbotapi.BotAPI {
 		log.Panic("Error init bot: ", err)
 	}
 
-	bot.Debug = true
+	bot.Debug = false
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -64,11 +66,16 @@ func bot() *tgbotapi.BotAPI {
 	return bot
 }
 
-func EchoBot(ch chan string, chat_id int64) {
-	for msg := range ch {
-		newMessage := tgbotapi.NewMessage(chat_id, msg)
-		if _, err := BOT.Send(newMessage); err != nil {
-			log.Panic("Ошибка отправки сообщения боту: ", err)
+func EchoBot(ch chan []byte, chat_id int64) {
+	for chunk := range ch {
+		if msg, err := defineQuery(chunk); err != nil {
+			log.Println("EchoBot: ", err)
+		} else {
+			log.Println("Отправляю запрос боту: ", msg)
+			newMessage := tgbotapi.NewMessage(chat_id, msg)
+			if _, err := BOT.Send(newMessage); err != nil {
+				log.Panic("Ошибка отправки сообщения боту: ", err)
+			}
 		}
 	}
 }

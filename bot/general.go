@@ -106,7 +106,3 @@ func EchoBot(ch chan []byte, chat_id int64) {
 		}
 	}
 }
-
-func getDataCommit(id int) {
-
-}

@@ -73,6 +73,9 @@ func GetCommitData(id int, collectionName string, commit *CommitData) {
 
 	if err := getCollection(collectionName).FindOne(context.TODO(), bson.M{"id": id}).Decode(&data); err != nil {
 		log.Println("ошибка получения данных", err)
+		*commit = CommitData{
+			COMMENT: "Запрошенный коммит не найден",
+		}
 	} else {
 		jD, err := json.Marshal(data)
 		if err != nil {

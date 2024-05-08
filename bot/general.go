@@ -1,8 +1,12 @@
 package bot
 
 import (
+	"belivr_service_bot/db"
+	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -30,16 +34,30 @@ func InitBOT() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 
 		// Extract the command from the Message.
-		switch update.Message.Command() {
-		// case "help":
-		// 	msg.Text = "I understand /sayhi and /status."
+		switch {
+		case regexp.MustCompile(`^version_\d+$`).MatchString(update.Message.Command()):
+			go func(chatID int64, version string) {
+
+				var commitData db.CommitData
+
+				id := chatID
+
+				if commit_id, err := strconv.Atoi(version); err == nil {
+					db.GetCommitData(commit_id, "commits", &commitData)
+
+					newMessage := tgbotapi.NewMessage(id, fmt.Sprintf("------------------------------\nВерсия сборки: 0.%d\nАвтор: %s\nКоментарий:\n%s\n------------------------------\nsha: %s", commitData.ID, commitData.AUTHOR, commitData.COMMENT, commitData.SHA))
+					if _, err = BOT.Send(newMessage); err != nil {
+						log.Panic("Ошибка отправки сообщения боту: ", err)
+					}
+
+				}
+			}(update.Message.Chat.ID, update.Message.Command()[8:])
 		// case "sayhi":
 		// 	msg.Text = "Hi :)"
 		// case "status":
 		// 	msg.Text = "I'm ok."
-		case "echo":
+		case update.Message.Command() == "echo":
 			go func(chatID int64) {
-
 				id := chatID
 				log.Println("<<Сработал echo>> : CHAI_ID: ", id)
 				go EchoBot(BOT_CHANEL, id)
@@ -87,4 +105,8 @@ func EchoBot(ch chan []byte, chat_id int64) {
 
 		}
 	}
+}
+
+func getDataCommit(id int) {
+
 }

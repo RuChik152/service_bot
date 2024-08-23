@@ -20,7 +20,7 @@ func init() {
 	if FTP_LOADER_URL != "" {
 		log.Println("FTP_LOADER_URL", FTP_LOADER_URL)
 	} else {
-		log.Println("Ошибка!!! Не установлен логин к MongoDB")
+		log.Println("Ошибка!!! Не установлен URL к FTP LOADER")
 		os.Exit(1)
 	}
 

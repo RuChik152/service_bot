@@ -58,7 +58,7 @@ func formaterBuildMsgBot(msg []byte) string {
 		log.Panic("ошибка преобразования")
 	}
 
-	return fmt.Sprintf("------------------------------\n1) %s\n2) %s\n%s\n------------------------------", data.Device.BuildInfo, data.Device.SendInfo, data.Info.Log)
+	return fmt.Sprintf("------------------------------\n1) %s\n2) %s\n%s\n------------------------------,\nАльтернативный способ загрузки OCULUS ⤵️\n/upload_oculus ", data.Device.BuildInfo, data.Device.SendInfo, data.Info.Log)
 
 }
 

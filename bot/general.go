@@ -56,6 +56,38 @@ func InitBOT() {
 		// 	msg.Text = "Hi :)"
 		// case "status":
 		// 	msg.Text = "I'm ok."
+		case update.Message.Command() == "upload_oculus":
+			go func(chatID int64) {
+				id := chatID
+
+				initMsg := tgbotapi.NewMessage(id, fmt.Sprintln("Отправка альтернативным способом"))
+				if _, err := BOT.Send(initMsg); err != nil {
+					log.Println("Ошибка отправки сообщения : ", err)
+				}
+
+				check, err := uploadRequest()
+				if err != nil {
+					log.Println(err)
+					newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nОтправка через альтернативный канал, не успешная.\nMSG: %s,\nhttp-status:%d", check.msg, check.code))
+					if _, err := BOT.Send(newMsg); err != nil {
+						log.Println("Ошибка отправки сообщения : ", err)
+					}
+				}
+
+				if check.code == 200 {
+					newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("✅✅✅✅\nОтправка через альтернативный канал, успешная.\nMSG: %s,\nhttp-status:%d", check.msg, check.code))
+					if _, err := BOT.Send(newMsg); err != nil {
+						log.Println("Ошибка отправки сообщения : ", err)
+					}
+				} else {
+					log.Println(err)
+					newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nОтправка через альтернативный канал, не успешная.\nMSG: %s,\nhttp-status:%d", check.msg, check.code))
+					if _, err := BOT.Send(newMsg); err != nil {
+						log.Println("Ошибка отправки сообщения : ", err)
+					}
+				}
+
+			}(update.Message.Chat.ID)
 		case update.Message.Command() == "echo":
 			go func(chatID int64) {
 				id := chatID

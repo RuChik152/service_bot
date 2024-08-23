@@ -1,6 +1,6 @@
 module belivr_service_bot
 
-go 1.21.0
+go 1.19
 
 require (
 	github.com/gorilla/mux v1.8.1

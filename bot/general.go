@@ -4,6 +4,7 @@ import (
 	"belivr_service_bot/db"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -52,10 +53,58 @@ func InitBOT() {
 
 				}
 			}(update.Message.Chat.ID, update.Message.Command()[8:])
-		// case "sayhi":
-		// 	msg.Text = "Hi :)"
-		// case "status":
-		// 	msg.Text = "I'm ok."
+			// case "sayhi":
+			// 	msg.Text = "Hi :)"
+			// case "status":
+			// 	msg.Text = "I'm ok."
+		case update.Message.Command() == "restart_pc":
+			go func(chatID int64) {
+				id := chatID
+				_, err := restartBuild("PC")
+				if err != nil {
+					newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nЗапрос для запуска сборки через бота закончился с ошибкой\n %s", err))
+					if _, err := BOT.Send(newMsg); err != nil {
+						log.Println("Ошибка отправки сообщения : ", err)
+					}
+				}
+				newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nЗапрос для запуска сборки через бота закончился с ошибкой\n %s", err))
+				if _, err := BOT.Send(newMsg); err != nil {
+					log.Println("Ошибка отправки сообщения : ", err)
+				}
+
+			}(update.Message.Chat.ID)
+		case update.Message.Command() == "restart_pico":
+			go func(chatID int64) {
+				id := chatID
+				_, err := restartBuild("PICO")
+				if err != nil {
+					newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nЗапрос для запуска сборки через бота закончился с ошибкой\n %s", err))
+					if _, err := BOT.Send(newMsg); err != nil {
+						log.Println("Ошибка отправки сообщения : ", err)
+					}
+				}
+				newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nЗапрос для запуска сборки через бота закончился с ошибкой\n %s", err))
+				if _, err := BOT.Send(newMsg); err != nil {
+					log.Println("Ошибка отправки сообщения : ", err)
+				}
+
+			}(update.Message.Chat.ID)
+		case update.Message.Command() == "restart_oculus":
+			go func(chatID int64) {
+				id := chatID
+				_, err := restartBuild("OCULUS")
+				if err != nil {
+					newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nЗапрос для запуска сборки через бота закончился с ошибкой\n %s", err))
+					if _, err := BOT.Send(newMsg); err != nil {
+						log.Println("Ошибка отправки сообщения : ", err)
+					}
+				}
+				newMsg := tgbotapi.NewMessage(id, fmt.Sprintf("⛔️⛔️⛔️⛔️\nЗапрос для запуска сборки через бота закончился с ошибкой\n %s", err))
+				if _, err := BOT.Send(newMsg); err != nil {
+					log.Println("Ошибка отправки сообщения : ", err)
+				}
+
+			}(update.Message.Chat.ID)
 		case update.Message.Command() == "upload_oculus":
 			go func(chatID int64) {
 				id := chatID
@@ -137,4 +186,22 @@ func EchoBot(ch chan []byte, chat_id int64) {
 
 		}
 	}
+}
+
+func restartBuild(platforn string) (bool, error) {
+	client := &http.Client{}
+	var err error
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/restart/%s", BUILD_SERVER_URL, platforn), nil)
+	if err != nil {
+		return false, fmt.Errorf("%w", err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		return false, fmt.Errorf("%w", err)
+	}
+
+	return true, nil
+
 }

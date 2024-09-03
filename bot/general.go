@@ -23,6 +23,8 @@ func InitBOT() {
 
 	updates := BOT.GetUpdatesChan(u)
 
+	go EchoBot(BOT_CHANEL, -1001971090060)
+
 	for update := range updates {
 		if update.Message == nil { // ignore any non-Message updates
 			continue
@@ -137,12 +139,12 @@ func InitBOT() {
 				}
 
 			}(update.Message.Chat.ID)
-		case update.Message.Command() == "echo":
-			go func(chatID int64) {
-				id := chatID
-				log.Println("<<Сработал echo>> : CHAI_ID: ", id)
-				go EchoBot(BOT_CHANEL, id)
-			}(update.Message.Chat.ID)
+		// case update.Message.Command() == "echo":
+		// 	go func(chatID int64) {
+		// 		id := chatID
+		// 		log.Println("<<Сработал echo>> : CHAI_ID: ", id)
+		// 		go EchoBot(BOT_CHANEL, id)
+		// 	}(update.Message.Chat.ID)
 		default:
 			msg.Text = "I don't know that command"
 		}
@@ -166,6 +168,7 @@ func bot() *tgbotapi.BotAPI {
 }
 
 func EchoBot(ch chan []byte, chat_id int64) {
+	log.Println("Запуск приема сообщений от сервера. ID chanel: ", -1001971090060)
 	for chunk := range ch {
 		if msg, err := defineQuery(chunk); err != nil {
 			log.Println("EchoBot: ", err)
